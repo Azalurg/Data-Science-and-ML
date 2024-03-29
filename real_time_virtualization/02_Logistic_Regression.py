@@ -50,6 +50,7 @@ class InteractivePlot:
         if event.mouseevent.button == 3:
             print("pick")
             Artist.update(event.artist, {"color": "red"})
+            self.main_line.figure.canvas.draw()
 
     def show(self):
         plt.show()
