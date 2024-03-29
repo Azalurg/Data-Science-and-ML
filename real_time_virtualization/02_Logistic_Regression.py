@@ -12,8 +12,8 @@ class InteractivePlot:
         self.fig.set_figwidth(8)
         self.ax.set_xlim(0, 100)
         self.ax.set_ylim(-0.1, 1.1)
+        self.ax.set_title("Logistic Regression")
 
-        self.main_line, = self.ax.plot([], [], "oc", picker=True, pickradius=5)
         self.regression_line, = self.ax.plot([], [], color="black", alpha=0.7, linestyle=":")
 
         self.fig.canvas.mpl_connect('button_press_event', self.on_click)
@@ -24,6 +24,8 @@ class InteractivePlot:
         return L / (1 + np.exp(-k * (x - x0)))
 
     def add_new_point(self, x, y):
+        if x is None or y is None:
+            return
         self.xdata.append(x)
         self.ydata.append(round(y))
 
@@ -33,24 +35,21 @@ class InteractivePlot:
         logic_x = np.arange(0, 100, 0.5)
         l = self.logistic(logic_x, x0, k, L=1)
 
-        self.main_line.set_data(self.xdata, self.ydata)
+        self.ax.plot([x], [round(y)], "oc", picker=True, pickradius=5)
         self.regression_line.set_data(logic_x, l)
 
-        self.main_line.figure.canvas.draw()
-        self.regression_line.figure.canvas.draw()
+        self.fig.canvas.draw()
 
     def on_click(self, event):
         if event.button == 1:
             print("click")
-            if event.inaxes != self.main_line.axes:
-                return
             self.add_new_point(event.xdata, event.ydata)
 
     def on_pick(self, event):
         if event.mouseevent.button == 3:
             print("pick")
             Artist.update(event.artist, {"color": "red"})
-            self.main_line.figure.canvas.draw()
+            self.fig.canvas.draw()
 
     def show(self):
         plt.show()
